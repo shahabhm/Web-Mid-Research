@@ -814,4 +814,79 @@ it("renders correctly", () => {
 
 علاوه بر این با سیسات‌های test-driven development نیز سازگار نیست.
 
+    ## تغییر DOM
+
+وظیفه نوعی از توابع ایجاد نوعی تغییر در DOM است. این نوع تست‌ها می‌توانند چالش برانگیز باشند. این توابع ممکن است عملیات Async انجام دهند یا فراخوانی به دیگر توابعی داشته باشند که عملکرد آنها نیاز به mock داشته باشد.
+
+یک مثال را بررسی می‌کنیم. نمونه
+
+<div dir="ltr">
+
+```js
+"use strict";
+
+const $ = require("jquery");
+const fetchCurrentUser = require("./fetchCurrentUser.js");
+
+$("#button").click(() => {
+  fetchCurrentUser((user) => {
+    const loggedText = "Logged " + (user.loggedIn ? "In" : "Out");
+    $("#username").text(user.fullName + " - " + loggedText);
+  });
+});
+```
+
+</div>
+
+در این مثال پس کلیک از یک رخداد کلیک، داده‌هایی به صورت async دریافت می‌شوند و سپس محتوای یک المان تغییر می‌کند.
+
+می‌توان تستی به شکل زیر را برای آن نوشت.
+
+<div dir="ltr">
+
+```js
+"use strict";
+
+jest.mock("../fetchCurrentUser");
+
+test("displays a user after a click", () => {
+  // Set up our document body
+  document.body.innerHTML =
+    "<div>" +
+    '  <span id="username" />' +
+    '  <button id="button" />' +
+    "</div>";
+
+  // This module has a side-effect
+  require("../displayUser");
+
+  const $ = require("jquery");
+  const fetchCurrentUser = require("../fetchCurrentUser");
+
+  // Tell the fetchCurrentUser mock function to automatically invoke
+  // its callback with some data
+  fetchCurrentUser.mockImplementation((cb) => {
+    cb({
+      fullName: "Johnny Cash",
+      loggedIn: true,
+    });
+  });
+
+  // Use jquery to emulate a click on our button
+  $("#button").click();
+
+  // Assert that the fetchCurrentUser function was called, and that the
+  // #username span's inner text was updated as we'd expect it to.
+  expect(fetchCurrentUser).toBeCalled();
+  expect($("#username").text()).toBe("Johnny Cash - Logged In");
+});
+```
+
+</div>
+
+در این تست تابع `fetchCurrentUser` تقلید شده است تا به جای یک درخواست واقعی به شبکه، داده‌ها به صورت محلی دریافت شوند.
+
+همچنین تابعی که آن را تست می‌کنیم به DOM ارجاع دارد. به همین دلیل لازم است که DOM را به درستی پیاده‌سازی کرده باشیم.
+
+    
 </div>
