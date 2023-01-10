@@ -730,5 +730,88 @@ expect(mockFunc.getMockName()).toBe('a mock name');
 [مستندات](https://jestjs.io/docs/expect)
 مراجعه کنید.
 
+## snapshot testing
+
+snapshot test مقوله‌ای است که معمولا در تست کردن UI برنامه‌ها استفاده می‌شود و ابزاری است برای اطمینان از اینکه در UI برنامه تغییر غیرمنتظره‌ای ایجاد نمی‌شود.
+
+به طور معمولا یک تست snapshot از فایل snapshotای که از قبل از یک کامپوننت ذخیره شده به عنوان مرجع استفاده می‌کند. پس از render شدن کامپوننت، یک snapshot دیگر از آن گرفته می‌شود و با فایل snapshot قبلی مقایسه می‌شود. در صورتی که این دو snapshot مشابه یکدیگر نباشند، تست با شکست مواجه می‌شود.
+
+### مثال snapshot testing
+
+مثالی از استفاده از snapshot testing با jest را در React به نمایش می‌گذاریم. از پکیچی به نام test renderer متعلق به React استفاده می‌کنیم تا به جای بارگذاری کل برنامه، که بار زیادی را ایجاد می‌کند، تنها کامپوننت مورد نظر را بارگذاری کنیم.
+
+کامپوننت Link را در نظر بگیرید:
+
+<div dir="ltr">
+
+```js
+import { useState } from "react";
+
+const STATUS = {
+  HOVERED: "hovered",
+  NORMAL: "normal",
+};
+
+export default function Link({ page, children }) {
+  const [status, setStatus] = useState(STATUS.NORMAL);
+
+  const onMouseEnter = () => {
+    setStatus(STATUS.HOVERED);
+  };
+
+  const onMouseLeave = () => {
+    setStatus(STATUS.NORMAL);
+  };
+
+  return (
+    <a
+      className={status}
+      href={page || "#"}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
+      {children}
+    </a>
+  );
+}
+```
+
+</div>
+
+می‌توان تست snapshot زیر را برای این کامپوننت نوشت:
+
+<div dir="ltr">
+
+```js
+import renderer from "react-test-renderer";
+import Link from "../Link";
+
+it("renders correctly", () => {
+  const tree = renderer
+    .create(<Link page="http://www.facebook.com">Facebook</Link>)
+    .toJSON();
+  expect(tree).toMatchSnapshot();
+});
+```
+
+</div>
+
+بار اولی که این تست اجرا شود فایل snapshot مرجع ایجاد می‌شود. در دفعات بعد jest این فایل را با خروجی render مقایسه می‌کند. شکست خوردن تست به این معنا است که پیاده سازی این کامپوننت به طور غیرمنتظره‌ای تغییر کرده یا خطایی در render این کامپوننت وجود داشته.
+
+> :warning: فایل snapshot ایجاد شده باید همراه پروژه کامیت شود! مخصوصا که از نسخه 20 به بعد Jest فرایند تولید اتوماتیک snapshot در CI انجام نمی‌شود.
+
+### نکات تکمیلی
+
+#### 1. با تست snapshot مانند کد برخورد کنید
+
+بهتر است کامیت‌های مربوط به آنها بازبینی شوند. snapshotها باید کوتاه و متمرکز باشند و تحت تست‌هایی با استفاده از ابزارهایی مانند eslint قرار گیرند.
+
+#### 2. تست‌های snapshot باید قطعی باشند
+
+هربار اجرای تست بر کامپوننتی که تغییری نکرده باید نتیجه یکسان بدهد. در صورت استفاده از توابع غیرقطعی مانند `Date.now()` می‌توان آنها را Mock کرد.
+
+#### 3. تست snapshot جایگزین unit test نیست
+
+علاوه بر این با سیسات‌های test-driven development نیز سازگار نیست.
 
 </div>
