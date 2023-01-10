@@ -730,6 +730,135 @@ expect(mockFunc.getMockName()).toBe('a mock name');
 [مستندات](https://jestjs.io/docs/expect)
 مراجعه کنید.
 
+## زمانبندهای قلابی
+
+توابع زمانبند موجود در جاواسکریپت (setTimeout، setInterval،...) وابسته به گذر واقعی زمان هستند و عملکرد آنها برای محیط تست مناسب نیست. Jest می‌تواند این توابع را با توابع دیگری که می‌توانند گذر زمان را کنترل کنند جایگزین کند. به این توابع جایگزین به اصطلاح "fake timer" می‌گویند.
+
+استفاده از این توابع با استفاده از `jest.useFakeTimers()` انجام می‌شود. در مثال زیر نمونه کد اولیه‌ای از فعالسازی زمانبندهای قلابی است.
+
+<div dir="ltr">
+
+```js
+function timerGame(callback) {
+  console.log("Ready....go!");
+  setTimeout(() => {
+    console.log("Time's up -- stop!");
+    callback && callback();
+  }, 1000);
+}
+
+module.exports = timerGame;
+```
+
+```js
+jest.useFakeTimers();
+jest.spyOn(global, "setTimeout");
+
+test("waits 1 second before ending the game", () => {
+  const timerGame = require("../timerGame");
+  timerGame();
+
+  expect(setTimeout).toHaveBeenCalledTimes(1);
+  expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000);
+});
+```
+
+</div>
+
+### runAllTimers
+
+مثال بخش قبل را در نظر بگیرید. این بار یک تابع callback را به `timerGame` ارسال می‌کنیم. میخواهیم تستی بنویسیم که از فراخوانی callback پس از یک ثانیه اطمینان حاصل کنیم.
+
+از `runAllTimers` استفاده می‌کنیم تا در میانه تست زمان را به سرعت جلو ببریم.
+
+<div dir="ltr">
+
+```js
+jest.useFakeTimers();
+test("calls the callback after 1 second", () => {
+  const timerGame = require("../timerGame");
+  const callback = jest.fn();
+
+  timerGame(callback);
+
+  // At this point in time, the callback should not have been called yet
+  expect(callback).not.toBeCalled();
+
+  // Fast-forward until all timers have been executed
+  jest.runAllTimers();
+
+  // Now our callback should have been called!
+  expect(callback).toBeCalled();
+  expect(callback).toHaveBeenCalledTimes(1);
+});
+```
+
+</div>
+
+نحوه عملکرد `runAllTimers` بدین صورت است که تمامی macrotaskها و microtaskها را اجرا می‌کند. حتی اگر این تسک‌ها تسک جدیدی را ایجاد کنند، آنها را نیز اجرا می‌کند تا callback queue خالی شود.
+
+### runOnlyPendingTimers
+
+در حالت‌هایی که یک زمانبند بازگشتی داشته باشیم (زمانبندی که در callback خود زمانبند دیگری را تنظیم می‌کند) اجرای تمامی این زمانبندها منجر به یک چرخه بی‌انتها می‌شود.
+
+در این حالت برای رفع مشکل از `runOnlyPendingTimers` استفاده می‌کنیم. تفاوت `runOnlyPendingTimers` با `runAllTimers` در این است که تنها تسک‌هایی را که تا لحظه فراخوانی آن در callback queue بوده‌اند را اجرا می‌کند و اگر هر تسک، تسک جدیدی را به صف اضافه کند، آن را اجرا نمی‌کند.
+
+مثال:
+
+<div dir="ltr">
+
+```js
+function infiniteTimerGame(callback) {
+  console.log("Ready....go!");
+
+  setTimeout(() => {
+    console.log("Time's up! 10 seconds before the next game starts...");
+    callback && callback();
+
+    // Schedule the next game in 10 seconds
+    setTimeout(() => {
+      infiniteTimerGame(callback);
+    }, 10000);
+  }, 1000);
+}
+
+module.exports = infiniteTimerGame;
+```
+
+```js
+jest.useFakeTimers();
+jest.spyOn(global, "setTimeout");
+
+describe("infiniteTimerGame", () => {
+  test("schedules a 10-second timer after 1 second", () => {
+    const infiniteTimerGame = require("../infiniteTimerGame");
+    const callback = jest.fn();
+
+    infiniteTimerGame(callback);
+
+    // At this point in time, there should have been a single call to
+    // setTimeout to schedule the end of the game in 1 second.
+    expect(setTimeout).toHaveBeenCalledTimes(1);
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 1000);
+
+    // Fast forward and exhaust only currently pending timers
+    // (but not any new timers that get created during that process)
+    jest.runOnlyPendingTimers();
+
+    // At this point, our 1-second timer should have fired its callback
+    expect(callback).toBeCalled();
+
+    // And it should have created a new timer to start the game over in
+    // 10 seconds
+    expect(setTimeout).toHaveBeenCalledTimes(2);
+    expect(setTimeout).toHaveBeenLastCalledWith(expect.any(Function), 10000);
+  });
+});
+```
+
+</div>
+
+    
 ## snapshot testing
 
 snapshot test مقوله‌ای است که معمولا در تست کردن UI برنامه‌ها استفاده می‌شود و ابزاری است برای اطمینان از اینکه در UI برنامه تغییر غیرمنتظره‌ای ایجاد نمی‌شود.
