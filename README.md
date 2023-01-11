@@ -734,7 +734,7 @@ expect(mockFunc.getMockName()).toBe('a mock name');
 
 توابع زمانبند موجود در جاواسکریپت (setTimeout، setInterval،...) وابسته به گذر واقعی زمان هستند و عملکرد آنها برای محیط تست مناسب نیست. Jest می‌تواند این توابع را با توابع دیگری که می‌توانند گذر زمان را کنترل کنند جایگزین کند. به این توابع جایگزین به اصطلاح "fake timer" می‌گویند.
 
-استفاده از این توابع با استفاده از `jest.useFakeTimers()` امکان پذیر می‌شود. در مثال زیر نمونه کد اولیه‌ای از فعالسازی زمانبندهای قلابی است.
+استفاده از این توابع با استفاده از `jest.useFakeTimers()` انجام می‌شود. در مثال زیر نمونه کد اولیه‌ای از فعالسازی زمانبندهای قلابی است.
 
 <div dir="ltr">
 
@@ -765,9 +765,7 @@ test("waits 1 second before ending the game", () => {
 
 </div>
 
-برای آنکه مجددا زمانبند‌ها را به رفتار عادی‌شان بازگردانیم از ```useRealTimers()``` استفاده می‌کنیم.
-
-### runAllTimers
+### اجرای تمامی زمانبندها
 
 مثال بخش قبل را در نظر بگیرید. این بار یک تابع callback را به `timerGame` ارسال می‌کنیم. میخواهیم تستی بنویسیم که از فراخوانی callback پس از یک ثانیه اطمینان حاصل کنیم.
 
@@ -797,9 +795,9 @@ test("calls the callback after 1 second", () => {
 
 </div>
 
-نحوه عملکرد `runAllTimers` بدین صورت است که تمامی macrotaskها و microtaskها را اجرا می‌کند. حتی اگر این تسک‌ها تسک جدیدی را ایجاد کنند، آنها را نیز اجرا می‌کند تا callback queue خالی شود.
+نحوه عملکرد `runAllTimers` بدین صورت است که تمامی macrotaskها (تسک‌های async ناشی از setTimeout و setInterval) و microtaskها (تسک‌های async ناشی از promiseها) را اجرا می‌کند. حتی اگر این تسک‌ها تسک جدیدی را ایجاد کنند، آنها را نیز اجرا می‌کند تا callback queue خالی شود.
 
-### runOnlyPendingTimers
+### اجرای زمانبندهای در انتظار
 
 در حالت‌هایی که یک زمانبند بازگشتی داشته باشیم (زمانبندی که در callback خود زمانبند دیگری را تنظیم می‌کند) اجرای تمامی این زمانبندها منجر به یک چرخه بی‌انتها می‌شود.
 
@@ -860,6 +858,49 @@ describe("infiniteTimerGame", () => {
 
 </div>
 
+### پیش‌برد زمانبندها براساس زمان
+
+یک گزینه دیگر برای کنترل بیشتر بر زمانبند‌ها استفاده از تابع `jest.advanceTimersByTime(msToRun)` است. هنگام فراخوانی این تابع تمامی زمانبندها به مقدار `msToRun` پیشروی می‌کنند. در این بازه زمانی، تمامی macrotaskهای درون task queue و دیگر macrotaskهای ناشی از آنها اجرا می‌شوند.
+
+<div dir="ltr">
+
+```js
+function timerGame(callback) {
+  console.log("Ready....go!");
+  setTimeout(() => {
+    console.log("Time's up -- stop!");
+    callback && callback();
+  }, 1000);
+}
+
+module.exports = timerGame;
+```
+
+```js
+jest.useFakeTimers();
+it("calls the callback after 1 second via advanceTimersByTime", () => {
+  const timerGame = require("../timerGame");
+  const callback = jest.fn();
+
+  timerGame(callback);
+
+  // At this point in time, the callback should not have been called yet
+  expect(callback).not.toBeCalled();
+
+  // Fast-forward until all timers have been executed
+  jest.advanceTimersByTime(1000);
+
+  // Now our callback should have been called!
+  expect(callback).toBeCalled();
+  expect(callback).toHaveBeenCalledTimes(1);
+});
+```
+
+</div>
+
+### تخلیه زمانبندها
+
+گاهی ممکن است در تست‌ها مفید باشد که تمامی زمانبندها را متوقف کنیم. در این هنگام از تابع `jest.clearAllTimers()` استفاده می‌کنیم.
     
 ## snapshot testing
 
