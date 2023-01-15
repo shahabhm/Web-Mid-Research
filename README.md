@@ -12,21 +12,6 @@
 
 <div dir="rtl">
 
-
-<div dir="rtl">
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <body dir="rtl">
-
 <h1>
 یادگیری jest
 </h1>
@@ -159,16 +144,19 @@ jest --init
 </br>
 
 <h3>اگر بخواهید از طریق npm نصب کنید:</h3>
+
 <div dir='ltr'>
 
 ```
 npm install --save-dev babel-jest @babel/core @babel/preset-env
 ```
- </div>
+</div>
 
 
 <h3>اگر بخواهید از طریق yarn نصب کنید:</h3>
+
 <div dir='ltr'>
+
 ```
 yarn add --dev babel-jest @babel/core @babel/preset-env
 ```
@@ -180,7 +168,9 @@ yarn add --dev babel-jest @babel/core @babel/preset-env
 با ایجاد یک فایل babel.config.js در root پروژه، Babel را برای هدف قرار دادن نسخه فعلی Node پیکربندی کنید:</p>
 
 <h3 dir="ltr" >babel.config.js</h3>
+
 <div dir='ltr'>
+
 ```
 module.exports = {
   presets: [['@babel/preset-env', {targets: {node: 'current'}}]],
@@ -216,7 +206,9 @@ babel-jest به طور خودکار هنگام نصب Jest نصب می شود و
 
 <h3 dir="ltr" >jest.config.js
 </h3>
+
 <div dir='ltr'>
+
 ```
 module.exports = {
   transform: {},
@@ -291,9 +283,11 @@ module.exports = {
 
 </br>
 <h2>از طریق ts-jest</h2>
+
 <p>ts-jest یک پیش پردازنده TypeScript با پشتیبانی از نقشه منبع برای Jest است که به شما امکان می دهد از Jest برای آزمایش پروژه های نوشته شده در TypeScript استفاده کنید.</p>
 
 <div dir='ltr'>
+
 ```
 //install with npm
 npm install --save-dev ts-jest
@@ -577,6 +571,7 @@ test('compiling android goes as expected', () => {
 به عنوان مثال، فرض کنید که fetchData وعده ای را برمی گرداند که قرار است به رشته «peanut butter» حل شود. ما می توانیم آن را با:</p>
 
 <div dir='ltr'>
+
 ```
 test('the data is peanut butter', () => {
   return fetchData().then(data => {
