@@ -14,6 +14,911 @@
 
 
 <div dir="rtl">
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <body dir="rtl">
+
+<h1>
+یادگیری jest
+</h1>
+
+<h2> شروع یادگیری</h2>
+<p> در ابتدا جست را با کمک پکیج منیجر مورد علاقه خود نصب کنید</p>
+
+<div dir='ltr'>
+
+```
+//install with npm
+npm install --save-dev jest
+
+
+//install with yarn
+yarn add --dev jest
+```
+ </div>
+
+
+<p>
+بیایید با نوشتن یک تست برای یک تابع فرضی که دو عدد را جمع می کند شروع کنیم. ابتدا یک فایل sum.js ایجاد کنید:</p>
+<p>در کدی که در ادامه مشاهده میکنید ما یک تابع داریم که دو عدد را ورودی میگیرد و آنها را با هم جمع میکند و در نهایت خروجی میدهد.</p>
+
+<div dir='ltr'>
+
+```
+function sum(a, b) {
+  return a + b;
+}
+module.exports = sum;
+```
+ </div>
+
+
+<p>
+سپس یک فایل به نام sum.test.js ایجاد کنید. این شامل تست واقعی ما خواهد بود:</p>
+<p>کدی که مشاهده میکنید در واقع داره میگه که برای مثال اگر دو عدد مانند یک و دو را با هم اگر جمع کنیم حتما خروجی مان برابر سه خواهد بود.</p>
+
+<div dir='ltr'>
+
+```
+const sum = require('./sum');
+
+test('adds 1 + 2 to equal 3', () => {
+  expect(sum(1, 2)).toBe(3);
+});
+```
+ </div>
+
+
+
+<p>
+حالا در گام بعد بخش زیر را به package.json خود اضافه کنید:</p>
+
+<div dir='ltr'>
+
+
+```
+{
+  "scripts": {
+    "test": "jest"
+  }
+}
+```
+
+ </div>
+
+<p>
+در نهایت، yarn test یا npm test را اجرا کنید و Jest این پیام را چاپ خواهد کرد:</p>
+
+
+<div dir='ltr'>
+
+
+```
+PASS  ./sum.test.js
+✓ adds 1 + 2 to equal 3 (5ms)
+```
+ </div>
+
+
+
+<p>
+شما اولین تست خود را با استفاده از Jest با موفقیت نوشتید!
+
+این تست دقیقا مانند آنچه که انتظارش را داشتیم بود و toBe برای آزمایش اینکه دو مقدار دقیقاً یکسان هستند استفاده میشود.
+
+</p>
+
+</br>
+
+<h2> اگر بخواهیم از طریق کامند لاین اجرا کنیم:</h2>
+
+<p>
+می‌توانید Jest را مستقیماً از CLI اجرا کنید
+
+(اگر در PATH شما به‌طور جهانی در دسترس باشد، به عنوان مثال با استفاده از yarn global add jest یا npm install jest --global) با گزینه‌های مفید متنوعی.
+
+در اینجا نحوه اجرای Jest بر روی فایل های مطابق با my-test، با استفاده از config.json به عنوان فایل پیکربندی و نمایش اعلان سیستم عامل اصلی پس از اجرا آمده است:</p>
+
+<div dir='ltr'>
+
+```
+jest my-test --notify --config=config.json
+```
+
+
+ </div>
+
+<h2>پیکربندی اضافی    (Additional Configuration)  </h2>
+
+<p>
+یک فایل پیکربندی اولیه ایجاد کنید
+بر اساس پروژه شما، Jest از شما چند سوال می پرسد و یک فایل پیکربندی اولیه با توضیحات کوتاه برای هر گزینه ایجاد می کند:</p>
+
+
+
+<div dir='ltr'>
+
+```
+jest --init
+```
+ </div>
+
+
+</br>
+
+<h2> حال به نصب بابل میپردازیم</h2>
+</br>
+
+<h3>اگر بخواهید از طریق npm نصب کنید:</h3>
+<div dir='ltr'>
+
+```
+npm install --save-dev babel-jest @babel/core @babel/preset-env
+```
+ </div>
+
+
+<h3>اگر بخواهید از طریق yarn نصب کنید:</h3>
+<div dir='ltr'>
+```
+yarn add --dev babel-jest @babel/core @babel/preset-env
+```
+
+ </div>
+
+
+<p>
+با ایجاد یک فایل babel.config.js در root پروژه، Babel را برای هدف قرار دادن نسخه فعلی Node پیکربندی کنید:</p>
+
+<h3 dir="ltr" >babel.config.js</h3>
+<div dir='ltr'>
+```
+module.exports = {
+  presets: [['@babel/preset-env', {targets: {node: 'current'}}]],
+};
+```
+
+ </div>
+
+
+<p>
+Jest اگر روی چیز دیگری تنظیم نشده باشد، process.env.NODE_ENV را روی "test" تنظیم می کند. شما می توانید از آن در پیکربندی خود استفاده کنید تا به صورت مشروط فقط کامپایل مورد نیاز برای Jest را تنظیم کنید، به عنوان مثال:</p>
+
+<h3 dir="ltr" >babel.config.js</h3>
+<div dir='ltr'>
+
+```
+module.exports = api => {
+  const isTest = api.env('test');
+  // You can use isTest to determine what presets and plugins to use.
+
+  return {
+    // ...
+  };
+};
+```
+ </div>
+
+
+</br>
+
+<p>
+babel-jest به طور خودکار هنگام نصب Jest نصب می شود و اگر پیکربندی babel در پروژه شما وجود داشته باشد، به طور خودکار فایل ها را تغییر می دهد. برای جلوگیری از این رفتار، می توانید به صراحت گزینه پیکربندی تبدیل را بازنشانی کنید:</p>
+
+<h3 dir="ltr" >jest.config.js
+</h3>
+<div dir='ltr'>
+```
+module.exports = {
+  transform: {},
+};
+```
+
+ </div>
+
+
+<h3>بسته وب  (webpack) </h3>
+<p>
+Jest را می توان در پروژه هایی استفاده کرد که از بسته وب برای مدیریت دارایی ها، سبک ها و کامپایل استفاده می کنند. وب پک چالش های منحصر به فردی را نسبت به سایر ابزارها ارائه می دهد   .</p>
+
+</br>
+
+<h3>با استفاده از Vite</h3>
+<p>
+Jest می‌تواند در پروژه‌هایی استفاده شود که از vite برای ارائه کد منبع بر روی ESM بومی استفاده می‌کنند تا برخی از ابزارهای فرانت‌اند را ارائه دهند، vite یک ابزار نظری است و گردش‌های کاری خارج از جعبه را ارائه می‌دهد. Jest به دلیل نحوه عملکرد سیستم پلاگین از vite به طور کامل توسط vite پشتیبانی نمی شود</p>
+
+</br>
+
+<h2>با استفاده از TypeScript</h2>
+
+<h3>از طریق بابل</h3>
+
+<p>Jest از TypeScript از طریق Babel پشتیبانی می کند. ابتدا، مطمئن شوید که دستورالعمل‌های استفاده از Babel را در بالا دنبال کرده‌اید. سپس،  babel/preset-typescript را نصب کنید:</p>
+
+<div dir='ltr'>
+
+```
+//install with npm
+npm install --save-dev @babel/preset-typescript
+```
+ </div>
+
+
+<div dir='ltr'>
+
+
+```
+//install with yarn
+yarn add --dev @babel/preset-typescript
+```
+ </div>
+
+
+
+<p>
+سپس  babel/preset-typescript را به لیست از پیش تنظیم‌ها در babel.config.js خود اضافه کنید.</p>
+
+<h3 dir="ltr">
+babel.config.js
+</h3>
+<div dir='ltr'>
+
+```
+module.exports = {
+  presets: [
+    ['@babel/preset-env', {targets: {node: 'current'}}],
+    '@babel/preset-typescript',
+  ],
+};
+```
+ </div>
+
+
+
+</br>
+
+<p>
+با این حال، برخی اخطارها برای استفاده از TypeScript با Babel وجود دارد. از آنجایی که پشتیبانی TypeScript در Babel صرفاً ترجمه است، Jest تست‌های شما را در حین اجرا بررسی نمی‌کند. اگر می خواهید، می توانید به جای آن از ts-jest استفاده کنید یا فقط کامپایلر TypeScript tsc را به طور جداگانه (یا به عنوان بخشی از فرآیند ساخت خود) اجرا کنید.</p>
+
+</br>
+<h2>از طریق ts-jest</h2>
+<p>ts-jest یک پیش پردازنده TypeScript با پشتیبانی از نقشه منبع برای Jest است که به شما امکان می دهد از Jest برای آزمایش پروژه های نوشته شده در TypeScript استفاده کنید.</p>
+
+<div dir='ltr'>
+```
+//install with npm
+npm install --save-dev ts-jest
+```
+
+ </div>
+
+<div dir='ltr'>
+
+```
+//install with yarn
+yarn add --dev ts-jest
+```
+ </div>
+
+
+
+<p>
+و API های آزمایشی را از آن وارد کنید:</p>
+
+<h3 dir="ltr">sum.test.ts</h3>
+
+<div dir='ltr'>
+
+```
+import {describe, expect, test} from '@jest/globals';
+import {sum} from './sum';
+
+describe('sum module', () => {
+  test('adds 1 + 2 to equal 3', () => {
+    expect(sum(1, 2)).toBe(3);
+  });
+});
+```
+ </div>
+
+
+
+<p>
+@types/jest یک کتابخانه شخص ثالث است که در DefinitelyTyped نگهداری می‌شود، از این رو ممکن است آخرین ویژگی‌ها یا نسخه‌های Jest هنوز پوشش داده نشده باشند. سعی کنید تا حد امکان نسخه‌های Jest و @types/jest را مطابقت دهید. به عنوان مثال، اگر از Jest 27.4.0 استفاده می کنید، نصب 27.4.x از @types/jest ایده آل است.</p>
+
+</br>
+</br>
+
+<h2>
+استفاده از Matchers</h2>
+
+<p>Jest از "Matchers" استفاده می کند تا به شما امکان می دهد مقادیر را به روش های مختلف آزمایش کنید.</p>
+
+</br>
+
+<h3>Matchers های رایج </h3>
+
+<p>ساده ترین راه برای آزمایش یک مقدار، برابری دقیق است.
+</p>
+
+<div dir='ltr'>
+
+```
+test('two plus two is four', () => {
+  expect(2 + 2).toBe(4);
+});
+```
+ </div>
+
+
+
+</br>
+
+<p>
+در این کد، expect(2 + 2) یک شی "expectation" را برمی گرداند. شما معمولاً با این اشیاء مورد انتظار کار زیادی انجام نمی دهید به جز تطبیق دهنده های فراخوان. در این کد،  toBe(4) تطبیق دهنده است. وقتی Jest اجرا می‌شود، همه تطابق‌های ناموفق را ردیابی می‌کند تا بتواند پیام‌های خطای خوبی را برای شما چاپ کند.
+toBe از Object.is برای آزمایش برابری دقیق استفاده می کند. اگر می خواهید مقدار یک شی را بررسی کنید، به جای آن از toEqual یا toStrictEqual استفاده کنید:
+</p>
+
+<div dir='ltr'>
+
+```
+test('object assignment', () => {
+  const data = {one: 1};
+  data['two'] = 2;
+  expect(data).toEqual({one: 1, two: 2});
+});
+```
+ </div>
+
+
+
+<p>toEqual به صورت بازگشتی هر فیلد یک شی یا آرایه را بررسی می کند.</p>
+
+<p>استفاده از toStrictEqual بر استفاده از toEqual ترجیح داده می شود. toEqual به سادگی مقادیر تعریف نشده را نادیده می گیرد، در حالی که toStrictEqual آنها را در نظر می گیرد.</p>
+
+<h2>
+حقیقیت (Truthiness)</h2>
+<p>
+در تست‌ها، گاهی اوقات لازم است بین تعریف نشده، تهی و نادرست (undefined, null, and false) تمایز قائل شوید، اما گاهی اوقات نمی‌خواهید با این موارد متفاوت رفتار کنید. Jest حاوی کمک‌هایی است که به شما اجازه می‌دهند در مورد آنچه می‌خواهید صریح باشید.
+</p>
+
+<ul>
+
+<li>toBeNull فقط با null مطابقت دارد
+</li>
+
+<li>انطباق toBeUndefined فقط تعریف نشده است
+</li>
+
+<li>toBeDefined برعکس toBeUndefined است
+</li>
+
+<li>toBeTruthy هر چیزی را که یک عبارت if درست تلقی می کند مطابقت می دهد
+</li>
+
+<li>toBeFalsy هر چیزی را که یک عبارت if به عنوان نادرست تلقی می کند مطابقت می دهد
+</li>
+
+</ul>
+
+<p>
+برای مثال</p>
+
+<div dir='ltr'>
+
+```
+test('null', () => {
+  const n = null;
+  expect(n).toBeNull();
+  expect(n).toBeDefined();
+  expect(n).not.toBeUndefined();
+  expect(n).not.toBeTruthy();
+  expect(n).toBeFalsy();
+});
+
+test('zero', () => {
+  const z = 0;
+  expect(z).not.toBeNull();
+  expect(z).toBeDefined();
+  expect(z).not.toBeUndefined();
+  expect(z).not.toBeTruthy();
+  expect(z).toBeFalsy();
+});
+```
+
+
+ </div>
+
+
+</br>
+
+<h2>
+شماره  (Numbers)</h2>
+
+<p>بیشتر روش‌های مقایسه اعداد دارای معادل‌های همسان هستند.</p>
+
+<div dir='ltr'>
+
+```
+test('two plus two', () => {
+  const value = 2 + 2;
+  expect(value).toBeGreaterThan(3);
+  expect(value).toBeGreaterThanOrEqual(3.5);
+  expect(value).toBeLessThan(5);
+  expect(value).toBeLessThanOrEqual(4.5);
+
+  // toBe and toEqual are equivalent for numbers
+  expect(value).toBe(4);
+  expect(value).toEqual(4);
+});
+```
+
+ </div>
+
+
+<p>برای برابری ممیز شناور، به جای toEqual از toBeCloseTo استفاده کنید، زیرا نمی خواهید یک تست به یک خطای گرد کردن کوچک بستگی داشته باشد.</p>
+
+
+<div dir='ltr'>
+
+```
+test('adding floating point numbers', () => {
+  const value = 0.1 + 0.2;
+  //expect(value).toBe(0.3);           This won't work because of rounding error
+  expect(value).toBeCloseTo(0.3); // This works.
+});
+```
+
+ </div>
+
+</br>
+
+<h2> رشته ها 
+(Strings) </h2>
+
+<p>با toMatch می‌توانید رشته‌ها را در برابر عبارات منظم بررسی کنید:</p>
+
+<div dir='ltr'>
+
+```
+test('there is no I in team', () => {
+  expect('team').not.toMatch(/I/);
+});
+
+test('but there is a "stop" in Christoph', () => {
+  expect('Christoph').toMatch(/stop/);
+});
+```
+
+ </div>
+
+
+
+</br>
+
+<h2 > آرایه ها و تکرارپذیرها   (Arrays and iterables)
+  </h2>
+
+<p>با استفاده از toContain می‌توانید بررسی کنید که آیا یک آرایه یا تکرار دارای یک آیتم خاص است:</p>
+
+<div dir='ltr'>
+
+```
+const shoppingList = [
+  'diapers',
+  'kleenex',
+  'trash bags',
+  'paper towels',
+  'milk',
+];
+
+test('the shopping list has milk on it', () => {
+  expect(shoppingList).toContain('milk');
+  expect(new Set(shoppingList)).toContain('milk');
+});
+```
+ </div>
+
+
+
+</br>
+<h2>استثناها (Exceptions) </h2>
+<p>اگر می خواهید آزمایش کنید که آیا یک تابع خاص هنگام فراخوانی خطا می دهد یا خیر، از toThrow استفاده کنید.</p>
+
+<div dir='ltr'>
+
+```
+function compileAndroidCode() {
+  throw new Error('you are using the wrong JDK!');
+}
+
+test('compiling android goes as expected', () => {
+  expect(() => compileAndroidCode()).toThrow();
+  expect(() => compileAndroidCode()).toThrow(Error);
+
+  // You can also use a string that must be contained in the error message or a regexp
+  expect(() => compileAndroidCode()).toThrow('you are using the wrong JDK');
+  expect(() => compileAndroidCode()).toThrow(/JDK/);
+
+  // Or you can match an exact error mesage using a regexp like below
+  expect(() => compileAndroidCode()).toThrow(/^you are using the wrong JDK$/); // Test fails
+  expect(() => compileAndroidCode()).toThrow(/^you are using the wrong JDK!$/); // Test pass
+});
+```
+ </div>
+
+
+
+<p>تابعی که یک استثنا ایجاد می کند باید در یک تابع پیچیده فراخوانی شود در غیر این صورت ادعای toThrow ناموفق خواهد بود.</p>
+
+</br></br>
+
+<h2>  تست کد ناهمزمان (Testing Asynchronous Code) 
+</h2>
+
+<p>در جاوا اسکریپت معمول است که کد به صورت ناهمزمان اجرا شود. وقتی کدی دارید که به‌صورت ناهمزمان اجرا می‌شود، Jest باید بداند که کدی که آزمایش می‌کند چه زمانی کامل شده است، قبل از اینکه بتواند به آزمایش دیگری برود. Jest راه های مختلفی برای رسیدگی به این موضوع دارد.</p>
+
+</br>
+<h3> وعده ها (Promises)
+ </h3>
+
+<p>
+یک قول را از تست خود برگردانید، و Jest منتظر خواهد ماند تا آن وعده حل شود. اگر قول رد شود، آزمون ناموفق خواهد بود.
+
+به عنوان مثال، فرض کنید که fetchData وعده ای را برمی گرداند که قرار است به رشته «peanut butter» حل شود. ما می توانیم آن را با:</p>
+
+<div dir='ltr'>
+```
+test('the data is peanut butter', () => {
+  return fetchData().then(data => {
+    expect(data).toBe('peanut butter');
+  });
+});
+```
+
+ </div>
+
+
+
+</br>
+
+<h3>Async/Await</h3>
+
+<p>
+از طرف دیگر، می توانید از async استفاده کنید و در تست های خود منتظر بمانید. برای نوشتن یک تست async، از کلمه کلیدی async در مقابل تابعی که برای تست ارسال شده است استفاده کنید. به عنوان مثال، همان سناریوی fetchData را می توان تعریف کرد:</p>
+
+<div dir='ltr'>
+
+```
+test('the data is peanut butter', async () => {
+  const data = await fetchData();
+  expect(data).toBe('peanut butter');
+});
+
+test('the fetch fails with an error', async () => {
+  expect.assertions(1);
+  try {
+    await fetchData();
+  } catch (e) {
+    expect(e).toMatch('error');
+  }
+});
+```
+ </div>
+
+
+
+<p>
+می توانید async و await را با .resolves یا .rejects ترکیب کنید.</p>
+
+<div dir='ltr'>
+
+```
+test('the data is peanut butter', async () => {
+  await expect(fetchData()).resolves.toBe('peanut butter');
+});
+
+test('the fetch fails with an error', async () => {
+  await expect(fetchData()).rejects.toMatch('error');
+});
+```
+ </div>
+
+
+
+<p>
+اگر انتظار دارید وعده ای  رد شود، از روش .catch استفاده کنید. اطمینان حاصل کنید که expect.assertions را اضافه کرده اید تا تأیید شود که تعداد معینی از ادعاها فراخوانی شوند، در غیر این صورت، یک وعده اوکی شده در آزمون شکست نمی خورد.
+
+</p>
+
+<div dir='ltr'>
+
+```
+test('the fetch fails with an error', () => {
+  expect.assertions(1);
+  return fetchData().catch(e => expect(e).toMatch('error'));
+});
+```
+ </div>
+
+
+
+</br>
+
+<h2  > تماس های تلفنی (Callbacks)</h2>
+
+<p>
+اگر از وعده ها استفاده نمی کنید، می توانید از callbacks استفاده کنید. به عنوان مثال، فرض کنید که fetchData، به جای بازگشت یک وعده، انتظار یک تماس را دارد، یعنی برخی از داده ها را واکشی می کنند و پس از تکمیل آن، callback(null, data) را فرا می خواند. می‌خواهید تست کنید که این داده‌های برگشتی رشته «peanut butter» است.
+
+به‌طور پیش‌فرض، آزمایش‌های Jest پس از پایان اجرای خود کامل می‌شوند. این بدان معناست که این تست آنطور که در نظر گرفته شده کار نخواهد کرد:
+
+</p>
+
+
+<div dir='ltr'>
+
+```
+// Don't do this!
+test('the data is peanut butter', () => {
+  function callback(error, data) {
+    if (error) {
+      throw error;
+    }
+    expect(data).toBe('peanut butter');
+  }
+
+  fetchData(callback);
+});
+```
+
+ </div>
+
+
+<p>مشکل این است که به محض تکمیل fetchData، قبل از تماس مجدد، تست کامل می شود.
+
+یک نوع تست جایگزین وجود دارد که این مشکل را برطرف می کند. به جای قرار دادن تست در یک تابع با آرگومان خالی، از یک آرگومان منفرد به نام done استفاده کنید. Jest منتظر می ماند تا قبل از اتمام تست تماس انجام شده فراخوانی شود.</p>
+
+
+<div dir='ltr'>
+
+```
+test('the data is peanut butter', done => {
+  function callback(error, data) {
+    if (error) {
+      done(error);
+      return;
+    }
+    try {
+      expect(data).toBe('peanut butter');
+      done();
+    } catch (error) {
+      done(error);
+    }
+  }
+
+  fetchData(callback);
+});
+```
+ </div>
+
+
+
+<p>اگر ()done هرگز فراخوانی نشود، تست شکست خواهد خورد (با خطای timeout)، که می‌خواهید اتفاق بیفتد.
+
+اگر دستور expect با شکست مواجه شود، یک خطا ایجاد می کند و ()done فراخوانی نمی شود. اگر بخواهیم در لاگ تست ببینیم که چرا شکست خورده است، باید انتظار را در یک بلوک try بپیچیم و خطای موجود در بلوک catch را به انجام بدهیم. در غیر این صورت، با یک خطای زمان مات مواجه می‌شویم که نشان نمی‌دهد چه مقداری توسط expect(data) دریافت شده است.</p>
+
+</br>
+</br>
+<h2 dir="ltr">.resolves / .rejects</h2>
+
+<p> 
+شما همچنین می توانید از تطبیق .resolves در عبارت انتظار خود استفاده کنید و Jest منتظر خواهد ماند تا این وعده حل شود. اگر وعده رد شود، تست به طور خودکار ناموفق خواهد بود.</p>
+
+
+<div dir='ltr'>
+
+```
+test('the data is peanut butter', () => {
+  return expect(fetchData()).resolves.toBe('peanut butter');
+});
+```
+
+ </div>
+
+
+<h2>  راه اندازی و تخریب (Setup and Teardown)</h2>
+<p>
+ 
+اغلب در حین نوشتن تست‌ها، چند کار راه‌اندازی دارید که باید قبل از اجرای آزمایش‌ها انجام شود، و کارهای تکمیلی دارید که باید بعد از اجرای آزمایش‌ها انجام شود. Jest توابع کمکی را برای رسیدگی به این موضوع ارائه می دهد.</p>
+
+</br>
+</br>
+
+<h3>تنظیم مجدد (Repeating Setup) </h3>
+<p>
+
+اگر کارهایی دارید که باید به طور مکرر برای بسیاری از تست‌ها انجام دهید، می‌توانید از hooks BeforeEach و AfterEach استفاده کنید.
+
+به عنوان مثال، فرض کنید چندین تست با پایگاه داده ای از شهرها در تعامل هستند. شما یک متد ()initializeCityDatabase دارید که باید قبل از هر یک از این تست ها فراخوانی شود و یک متد clearCityDatabase() که باید بعد از هر یک از این تست ها فراخوانی شود. شما می توانید این کار را با:</p>
+
+
+<div dir='ltr'>
+
+```
+beforeEach(() => {
+  initializeCityDatabase();
+});
+
+afterEach(() => {
+  clearCityDatabase();
+});
+
+test('city database has Vienna', () => {
+  expect(isCity('Vienna')).toBeTruthy();
+});
+
+test('city database has San Juan', () => {
+  expect(isCity('San Juan')).toBeTruthy();
+});
+```
+ </div>
+
+
+
+</br>
+
+<p>beforeEach و afterEach می‌توانند کد ناهمزمان را به همان روشی که تست‌ها می‌توانند کد ناهمزمان را مدیریت کنند - آنها می‌توانند یک پارامتر انجام شده را بگیرند یا یک وعده را برگردانند. به عنوان مثال، اگر ()InitializeCityDatabase یک وعده را برگرداند که با مقداردهی اولیه پایگاه داده حل شد، ما می خواهیم آن وعده را برگردانیم:</p>
+
+<div dir='ltr'>
+
+```
+beforeEach(() => {
+  return initializeCityDatabase();
+});
+```
+ </div>
+
+
+
+</br>
+</br>
+
+<h3> راه اندازی یکباره (One-Time Setup) 
+</h3>
+<p>در برخی موارد، فقط باید یک بار، در ابتدای یک فایل، تنظیمات را انجام دهید. این می تواند به خصوص زمانی که راه اندازی ناهمزمان است آزاردهنده باشد، بنابراین نمی توانید آن را به صورت درون خطی انجام دهید. Jest برای مدیریت این وضعیت، هوک های قبل از همه و بعد از همه را فراهم می کند.
+
+برای مثال، اگر هر دو ()initializeCityDatabase و ()clearCityDatabase وعده‌هایی را برگرداندند، و پایگاه داده می‌توانست بین تست ها دوباره استفاده شود :
+
+</p>
+
+<div dir='ltr'>
+
+```
+beforeAll(() => {
+  return initializeCityDatabase();
+});
+
+afterAll(() => {
+  return clearCityDatabase();
+});
+
+test('city database has Vienna', () => {
+  expect(isCity('Vienna')).toBeTruthy();
+});
+
+test('city database has San Juan', () => {
+  expect(isCity('San Juan')).toBeTruthy();
+});
+```
+ </div>
+
+
+
+</br>
+</br>
+
+<h3>حکم اعدام</h3>
+<p>
+Jest قبل از اجرای هر یک از تست‌های واقعی، تمام راهنمای‌های توصیف را در یک فایل آزمایشی اجرا می‌کند. این دلیل دیگری برای انجام راه‌اندازی و حذف در داخل دسته‌های قبل و بعد* به جای داخل بلوک‌های توصیف است. پس از تکمیل بلوک‌های توصیفی، به‌طور پیش‌فرض، جست تمام تست‌ها را به ترتیبی که در مرحله جمع‌آوری با آن‌ها مواجه شد، اجرا می‌کند و منتظر می‌ماند تا هر کدام به پایان برسد و قبل از ادامه کار مرتب شود.</p>
+
+<div dir='ltr'>
+
+```
+describe('describe outer', () => {
+  console.log('describe outer-a');
+
+  describe('describe inner 1', () => {
+    console.log('describe inner 1');
+
+    test('test 1', () => console.log('test 1'));
+  });
+
+  console.log('describe outer-b');
+
+  test('test 2', () => console.log('test 2'));
+
+  describe('describe inner 2', () => {
+    console.log('describe inner 2');
+
+    test('test 3', () => console.log('test 3'));
+  });
+
+  console.log('describe outer-c');
+});
+
+// describe outer-a
+// describe inner 1
+// describe outer-b
+// describe inner 2
+// describe outer-c
+// test 1
+// test 2
+// test 3
+
+```
+ </div>
+
+
+
+<p>درست مانند بلوک‌های توصیف و آزمایش، Jest هوک های قبل* و بعد** را به ترتیب اعلان فراخوانی می‌کند. توجه داشته باشید که هوک های after* محدوده محصور ابتدا نامیده می شوند. به عنوان مثال، در اینجا نحوه تنظیم و از بین بردن منابع وابسته به یکدیگر آمده است:</p>
+
+<div dir='ltr'>
+
+```
+beforeEach(() => console.log('connection setup'));
+beforeEach(() => console.log('database setup'));
+
+afterEach(() => console.log('database teardown'));
+afterEach(() => console.log('connection teardown'));
+
+test('test 1', () => console.log('test 1'));
+
+describe('extra', () => {
+  beforeEach(() => console.log('extra database setup'));
+  afterEach(() => console.log('extra database teardown'));
+
+  test('test 2', () => console.log('test 2'));
+});
+
+// connection setup
+// database setup
+// test 1
+// database teardown
+// connection teardown
+
+// connection setup
+// database setup
+// extra database setup
+// test 2
+// extra database teardown
+// database teardown
+// connection teardown
+```
+
+ </div>
+
+</body>
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
 # تنظیم و جمع آوری
 
